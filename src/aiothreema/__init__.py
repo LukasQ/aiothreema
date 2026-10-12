@@ -5,6 +5,8 @@ from .exceptions import (
     ThreemaAuthError,
     ThreemaConnectionError,
     ThreemaGatewayError,
+    ThreemaNoCreditsError,
+    ThreemaRateLimitError,
     ThreemaSendError,
 )
 from .keys import derive_public_key, generate_key_pair
@@ -14,6 +16,8 @@ __all__ = [
     "ThreemaConnectionError",
     "ThreemaGatewayClient",
     "ThreemaGatewayError",
+    "ThreemaNoCreditsError",
+    "ThreemaRateLimitError",
     "ThreemaSendError",
     "derive_public_key",
     "generate_key_pair",

@@ -51,6 +51,12 @@ private_key, public_key = generate_key_pair()
 assert derive_public_key(private_key) == public_key
 ```
 
+### Checking remaining credits
+
+```python
+remaining = await client.get_credits()  # int
+```
+
 ### Using an existing `aiohttp.ClientSession`
 
 When embedding this client in a larger application (e.g. a long-lived service that already manages its own session pool), pass a session explicitly instead of using the context-manager form — the client will not close a session it doesn't own:
@@ -60,6 +66,26 @@ client = ThreemaGatewayClient("*GATEWAY", "api-secret", session=my_session)
 await client.send_text_message("ABCD1234", "Hello!")
 ```
 
+## Rate limiting and retries
+
+Each client throttles its own requests and retries transient failures:
+
+```python
+client = ThreemaGatewayClient(
+    "*GATEWAY",
+    "api-secret",
+    rate_limit=10,  # max requests per second, None to disable (default: 10)
+    max_retries=3,  # retries per request, 0 to disable (default: 3)
+)
+```
+
+- Retries use exponential backoff with jitter (about 1s, 2s, 4s, … capped at 30s).
+- On HTTP 429 the Gateway's `Retry-After` header is honored, and all other requests of the client are held back for that long. If the requested wait exceeds 30s, or the retries are used up, `ThreemaRateLimitError` is raised with the wait in `retry_after`.
+- Lookups (credits, public keys) are also retried on HTTP 5xx, connection errors and timeouts.
+- Sending a message is only retried when the Gateway definitely did not accept it (HTTP 429, or the connection could not be established). After a timeout or HTTP 5xx the message may already be on its way, so the error is raised instead of risking a duplicate.
+
+Note that an end-to-end encrypted send counts as two requests (public key lookup and send).
+
 ## Errors
 
 All errors inherit from `ThreemaGatewayError`:
@@ -67,6 +93,8 @@ All errors inherit from `ThreemaGatewayError`:
 - `ThreemaAuthError` — the Gateway ID or API secret was rejected.
 - `ThreemaConnectionError` — a network/transport failure talking to the Gateway.
 - `ThreemaSendError` — sending a message, or resolving a recipient's public key, failed.
+- `ThreemaNoCreditsError` — the account is out of credits (HTTP 402 on send). Subclasses `ThreemaSendError`.
+- `ThreemaRateLimitError` — the Gateway kept answering HTTP 429. Subclasses both `ThreemaSendError` and `ThreemaConnectionError`, so existing handlers keep catching it.
 
 ## Development
 
