@@ -23,6 +23,7 @@ from .exceptions import (
     ThreemaRateLimitError,
     ThreemaSendError,
 )
+from .keys import derive_public_key
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -114,6 +115,13 @@ class ThreemaGatewayClient:
         """Close the session, if this client owns it."""
         if self._owns_session and self._session is not None:
             await self._session.close()
+
+    @property
+    def public_key(self) -> str | None:
+        """Return the hex-encoded public key, or None without a private key."""
+        if self.private_key is None:
+            return None
+        return derive_public_key(self.private_key)
 
     @property
     def _client_session(self) -> aiohttp.ClientSession:

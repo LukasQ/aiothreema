@@ -51,6 +51,19 @@ private_key, public_key = generate_key_pair()
 assert derive_public_key(private_key) == public_key
 ```
 
+### Gateway QR code
+
+Recipients can verify the Gateway's public key by scanning its Threema ID QR code (`3mid:<id>,<public key>`) in the Threema app:
+
+```python
+from aiothreema import generate_qr_code
+
+svg = generate_qr_code(client.gateway_id, client.public_key)
+png = generate_qr_code(client.gateway_id, client.public_key, kind="png", scale=8)
+```
+
+`client.public_key` is derived from the private key, and is `None` for simple (non-E2E) mode. Rendering is CPU-bound, so run it in an executor when calling it from an event loop. `qr_code_payload()` returns just the encoded text.
+
 ### Checking remaining credits
 
 ```python

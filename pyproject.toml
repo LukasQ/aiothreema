@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiothreema"
-version = "0.2.0"
+version = "0.3.0"
 description = "Async Python client for the Threema Gateway HTTP API"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [{ name = "Lukas Merz", email = "merz.lukas@gmail.com" }]
-keywords = ["threema", "gateway", "messaging", "asyncio", "aiohttp"]
+keywords = ["threema", "gateway", "messaging", "asyncio", "aiohttp", "qr-code"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: AsyncIO",
@@ -26,6 +26,7 @@ classifiers = [
 dependencies = [
     "aiohttp>=3.9.0",
     "pynacl>=1.5.0",
+    "segno>=1.6.0",
 ]
 
 [project.urls]
