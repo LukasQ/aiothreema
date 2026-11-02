@@ -116,6 +116,37 @@ pip install -e ".[test]"
 pytest --cov=aiothreema
 ```
 
+### Roadmap
+
+#### Released
+- **0.1.0** — Gateway client extracted from Home Assistant: basic and end-to-end
+  encrypted text messages, key pair generation, public key derivation
+- **0.2.0** — Dedicated errors for no credits (`ThreemaNoCreditsError`) and rate
+  limiting (`ThreemaRateLimitError`), remaining credits (`get_credits()`),
+  improved logging
+- **0.3.0** — `public_key` property on the client; Threema ID QR codes
+  (`generate_qr_code()`, `qr_code_payload()`) for verifying a gateway's public key
+
+#### Next
+- **Strict key validation** — reject private/public keys that aren't exactly
+  64 hex characters with a clear error; `bytes.fromhex()` tolerates whitespace,
+  so padded keys currently fail later with an unhelpful message
+- **Test suite: assert real request payloads** — check endpoint URLs and form
+  fields (`from`, `secret`, `to`, `text`) instead of only `assert_awaited_once()`;
+  for end-to-end messages, decrypt `nonce`/`box` with the recipient's key and
+  assert the plaintext
+
+#### Planned
+- **Incoming messages** — verify and decrypt Gateway callback (webhook)
+  requests, including MAC check, and expose typed message objects
+- **Images and files** — blob upload and end-to-end encrypted file messages
+- **Delivery receipts** — parse delivery/read receipts from callbacks *(suggested)*
+
+### Ideas
+- **Lookups** — Threema ID by phone number/email hash, public key lookup and
+  recipient capabilities (Gateway API endpoints) *(suggested)*
+
+
 ## License
 
 MIT
