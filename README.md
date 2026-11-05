@@ -140,7 +140,9 @@ pytest --cov=aiothreema
 - **Incoming messages** — verify and decrypt Gateway callback (webhook)
   requests, including MAC check, and expose typed message objects
 - **Images and files** — blob upload and end-to-end encrypted file messages
+- **Receive Messages** — Duplex communication. Not only send, but also receive messages which trigger something. (did one just say HoomeAssistant-augmented Threema Bot?)
 - **Delivery receipts** — parse delivery/read receipts from callbacks *(suggested)*
+
 
 ### Ideas
 - **Lookups** — Threema ID by phone number/email hash, public key lookup and
